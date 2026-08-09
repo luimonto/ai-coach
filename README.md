@@ -52,3 +52,37 @@
                         ▼             ▼
                     Garmin        OpenAI
                      Client        Client
+
+
+                     
+
+                    ┌──────────────────────┐
+                    │      FastAPI API     │
+                    │                      │
+                    │ /workouts            │
+                    │ /athlete/profile     │
+                    │ /athlete/history     │
+                    │ /coach/schedule      │
+                    └──────────┬───────────┘
+                               │
+             ┌─────────────────┴─────────────────┐
+             │                                   │
+     ┌───────▼────────┐                  ┌───────▼────────┐
+     │ AthleteService │                  │  AIService     │
+     │                │                  │                │
+     │ profile        │                  │ prompt + LLM   │
+     │ goals          │                  │                │
+     │ history        │                  │                │
+     └───────┬────────┘                  └───────┬────────┘
+             │                                   │
+             └──────────────┬────────────────────┘
+                            │
+                    ┌───────▼────────┐
+                    │ Athlete Context │
+                    │                │
+                    │ profile        │
+                    │ goals          │
+                    │ training hist. │
+                    │ preferences    │
+                    │ limitations    │
+                    └────────────────┘
