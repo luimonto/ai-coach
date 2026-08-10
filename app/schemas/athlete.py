@@ -1,8 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import date
 
-from app.schemas.workout_summary import WorkoutSummary
-
 
 class AthleteProfile(BaseModel):
     name: str | None = None
@@ -40,12 +38,3 @@ class AthleteHistoryEntry(BaseModel):
     distance_meters: float | None = None
     duration_seconds: int | None = None
     notes: str | None = None
-
-
-class AthleteContext(BaseModel):
-    profile: AthleteProfile
-    goals: list[str] = []
-    recent_workouts: list[WorkoutSummary] = []
-    history: list[AthleteHistoryEntry] = []
-    upcoming_events: list[str] = []
-    notes: list[str] = []

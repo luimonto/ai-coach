@@ -9,9 +9,13 @@ class WorkoutService:
         self.ai_service = ai_service
         self.garmin_service = garmin_service
 
-    def get_current_workouts(self) -> list[WorkoutSummary]:
+    def get_recent_workouts(
+        self,
+        limit: int = 20,
+    ) -> list[WorkoutSummary]:
         workouts = self.garmin_service.get_workouts()
-        return [
+
+        summaries = [
             WorkoutSummary(
                 workout_id=workout["workoutId"],
                 workout_name=workout["workoutName"],
@@ -19,7 +23,7 @@ class WorkoutService:
                 sport_type_key=workout["sportType"]["sportTypeKey"],
                 description=workout.get("description"),
                 estimated_duration_seconds=workout.get(
-                    "estimatedDurationInSeconds"
+                    "estimatedDurationInSecs"
                 ),
                 estimated_distance_meters=workout.get(
                     "estimatedDistanceInMeters"
@@ -30,11 +34,17 @@ class WorkoutService:
             for workout in workouts
         ]
 
-    def create_schedule(self, user_goal: str) -> list[dict]:
+        return summaries[:limit] if limit > 0 else summaries
 
-        schedule = self.ai_service.generate_schedule(
-            user_goal
-        )
+
+    def get_current_workouts(self) -> list[WorkoutSummary]:
+        return self.get_recent_workouts()
+
+    def create_schedule(
+        self,
+        schedule: list[dict],
+    ) -> list[dict]:
+
         self.garmin_service.cleanup_ai_workouts()
 
         for entry in schedule:
@@ -43,8 +53,10 @@ class WorkoutService:
                 or "workoutData" not in entry
             ):
                 continue
+
             self.garmin_service.upload_and_schedule(
                 workout_payload=entry["workoutData"],
                 target_date=entry["scheduleDate"],
             )
+
         return schedule

@@ -5,8 +5,16 @@ from garminconnect import Garmin
 from app.clients.garmin_client import get_garmin_client
 from app.clients.openai_client import get_openai_client
 from app.services.ai_service import AIService
+from app.services.athlete_service import AthleteService
 from app.services.garmin_service import GarminService
 from app.services.workout_service import WorkoutService
+
+
+athlete_service = AthleteService()
+
+
+def get_athlete_service() -> AthleteService:
+    return athlete_service
 
 
 def get_ai_service(
@@ -22,12 +30,10 @@ def get_garmin_service(
 
 
 def get_workout_service(
-    ai_service: AIService = Depends(get_ai_service),
     garmin_service: GarminService = Depends(
         get_garmin_service
     ),
 ) -> WorkoutService:
     return WorkoutService(
-        ai_service=ai_service,
         garmin_service=garmin_service,
     )

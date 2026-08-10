@@ -5,7 +5,8 @@ from pathlib import Path
 from openai import OpenAI
 
 from app.core.config import get_settings
-from app.schemas.ai_coach import TrainingSchedule
+from app.schemas.coach import TrainingSchedule
+from app.schemas.coach import AthleteContext
 
 
 class AIService:
@@ -24,12 +25,25 @@ class AIService:
             encoding="utf-8"
         )
 
-    def generate_schedule(self, user_goal: str) -> TrainingSchedule:
+    def generate_schedule(self, user_goal: str, athlete_context: AthleteContext) -> TrainingSchedule:
 
         date_context = (
             f"Today's date is {date.today().isoformat()}. "
             f"Schedule relative to this date."
         )
+
+        athlete_context_json = athlete_context.model_dump_json(exclude_none=False)
+
+        user_prompt = f"""
+            ATHLETE CONTEXT:
+            {athlete_context_json}
+
+            ATHLETE REQUEST:
+            {user_goal}
+
+            Today's date is {date.today().isoformat()}.
+            Schedule relative to this date.
+        """
 
         response = self.client.chat.completions.create(
             model=self.settings.model,
@@ -40,7 +54,7 @@ class AIService:
                 },
                 {
                     "role": "user",
-                    "content": f"{user_goal}\n\n{date_context}",
+                    "content": user_prompt,
                 },
             ],
             temperature=0.1,
