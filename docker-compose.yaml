@@ -1,0 +1,58 @@
+services:
+
+  api:
+    build: .
+    container_name: ai-coach-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://ai_coach:ai_coach@postgres:5432/ai_coach
+      LLM_ENDPOINT: http://ollama:11434/v1
+      LLM_PROVIDER: ollama
+      MODEL: llama3.2
+    depends_on:
+      - postgres
+      - ollama
+
+
+  postgres:
+    image: postgres:16
+    container_name: ai-coach-postgres
+    environment:
+      POSTGRES_DB: ai_coach
+      POSTGRES_USER: ai_coach
+      POSTGRES_PASSWORD: ai_coach
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ai-coach-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: ai-coach-ollama-init
+    depends_on:
+      - ollama
+    entrypoint: >
+      sh -c "
+      sleep 5 &&
+      ollama pull llama3.2
+      "
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+
+
+volumes:
+  postgres_data:
+  ollama_data:
