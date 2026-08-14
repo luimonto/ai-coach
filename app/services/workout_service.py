@@ -1,13 +1,17 @@
 from app.services.ai_service import AIService
 from app.services.garmin_service import GarminService
 from app.schemas.workout_summary import WorkoutSummary
+from app.services.athlete_service import AthleteService
+from app.schemas.coach import AthleteContext
+from app.schemas.activity_summary import ActivitySummary
 
 
 class WorkoutService:
 
-    def __init__(self, ai_service: AIService, garmin_service: GarminService):
+    def __init__(self, ai_service: AIService, garmin_service: GarminService, athlete_service: AthleteService):
         self.ai_service = ai_service
         self.garmin_service = garmin_service
+        self.athlete_service = athlete_service
 
     def get_recent_workouts(
         self,
@@ -40,6 +44,26 @@ class WorkoutService:
     def get_current_workouts(self) -> list[WorkoutSummary]:
         return self.get_recent_workouts()
 
+    def build_athlete_context(
+            self,
+            limit: int = 20,
+    ) -> AthleteContext:
+        recent_activities = self.get_recent_activities(limit=limit)
+        return self.athlete_service.build_context(
+            recent_activities=recent_activities
+        )
+
+    def generate_training_schedule(
+        self,
+        user_goal: str
+    ):
+        athlete_context = self.build_athlete_context()
+
+        return self.ai_service.generate_schedule(
+            user_goal=user_goal,
+            athlete_context=athlete_context,
+        )
+
     def create_schedule(
         self,
         schedule: list[dict],
@@ -60,3 +84,39 @@ class WorkoutService:
             )
 
         return schedule
+
+    def get_recent_activities(
+        self,
+        limit: int = 20,
+    ) -> list[ActivitySummary]:
+
+        activities = self.garmin_service.get_recent_activities(limit)
+
+        return [
+            ActivitySummary(
+                activity_id=activity["activityId"],
+                activity_name=activity.get(
+                    "activityName",
+                    "Unknown Activity",
+                ),
+                sport_type_key=activity.get(
+                    "activityType",
+                    {}).get(
+                        "typeKey",
+                        "unknown",
+                    ),
+                start_time=activity.get("startTimeLocal"),
+                duration_seconds=activity.get("duration"),
+                distance_meters=activity.get("distance"),
+                average_heart_rate=activity.get(
+                    "averageHR"
+                ),
+                max_heart_rate=activity.get(
+                    "maxHR"
+                ),
+                calories=activity.get(
+                    "calories"
+                ),
+            )
+            for activity in activities
+        ]

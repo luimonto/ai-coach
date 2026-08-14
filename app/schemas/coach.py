@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field
 from datetime import date
 
+from app.schemas.activity_summary import ActivitySummary
 from app.schemas.athlete import AthleteHistoryEntry, AthleteProfile
-from app.schemas.workout_summary import WorkoutSummary
 
 
 class CoachRequest(BaseModel):
@@ -32,7 +32,7 @@ class TrainingSchedule(BaseModel):
 class AthleteContext(BaseModel):
     profile: AthleteProfile
     goals: list[str] = Field(default_factory=list)
-    recent_workouts: list[WorkoutSummary] = Field(default_factory=list)
+    recent_activities: list[ActivitySummary] = Field(default_factory=list)
     history: list[AthleteHistoryEntry] = Field(default_factory=list)
     upcoming_events: list[str] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)

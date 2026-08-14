@@ -1,6 +1,7 @@
 from app.schemas.athlete import AthleteProfile
 from app.schemas.coach import AthleteContext
 from app.schemas.workout_summary import WorkoutSummary
+from app.schemas.activity_summary import ActivitySummary
 
 
 class AthleteService:
@@ -17,9 +18,9 @@ class AthleteService:
 
     def build_context(
         self,
-        recent_workouts: list[WorkoutSummary],
+        recent_activities: list[ActivitySummary],
     ) -> AthleteContext:
         return AthleteContext(
             profile=self._profile,
-            recent_workouts=recent_workouts,
+            recent_activities=recent_activities
         )

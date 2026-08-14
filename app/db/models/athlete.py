@@ -16,6 +16,7 @@ class Athlete(Base):
 
     name: Mapped[str] = mapped_column(
         String(100),
+        nullable=False,
     )
 
     goal: Mapped[str | None] = mapped_column(

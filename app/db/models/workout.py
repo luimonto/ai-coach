@@ -1,12 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (
-    DateTime,
-    Float,
-    Integer,
-    String,
-    Text,
-)
+from sqlalchemy import DateTime, Float, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
@@ -24,10 +18,12 @@ class Workout(Base):
         Integer,
         unique=True,
         index=True,
+        nullable=False,
     )
 
     workout_name: Mapped[str] = mapped_column(
         String(255),
+        nullable=False,
     )
 
     sport_type_id: Mapped[int | None] = mapped_column(
@@ -55,12 +51,12 @@ class Workout(Base):
         nullable=True,
     )
 
-    created_at: Mapped[datetime | None] = mapped_column(
+    garmin_created_at: Mapped[datetime | None] = mapped_column(
         DateTime,
         nullable=True,
     )
 
-    updated_at: Mapped[datetime | None] = mapped_column(
+    garmin_updated_at: Mapped[datetime | None] = mapped_column(
         DateTime,
         nullable=True,
     )

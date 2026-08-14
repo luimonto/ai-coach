@@ -1,12 +1,15 @@
 import json
+import logging
 from datetime import date
 from pathlib import Path
 
 from openai import OpenAI
 
 from app.core.config import get_settings
-from app.schemas.coach import TrainingSchedule
-from app.schemas.coach import AthleteContext
+from app.schemas.coach import TrainingSchedule, AthleteContext
+
+
+logger = logging.getLogger(__name__)
 
 
 class AIService:
@@ -25,14 +28,15 @@ class AIService:
             encoding="utf-8"
         )
 
-    def generate_schedule(self, user_goal: str, athlete_context: AthleteContext) -> TrainingSchedule:
+    def generate_schedule(
+        self,
+        user_goal: str,
+        athlete_context: AthleteContext,
+    ) -> TrainingSchedule:
 
-        date_context = (
-            f"Today's date is {date.today().isoformat()}. "
-            f"Schedule relative to this date."
+        athlete_context_json = athlete_context.model_dump_json(
+            exclude_none=False
         )
-
-        athlete_context_json = athlete_context.model_dump_json(exclude_none=False)
 
         user_prompt = f"""
             ATHLETE CONTEXT:
@@ -58,17 +62,33 @@ class AIService:
                 },
             ],
             temperature=0.1,
-            response_format={
-                "type": "json_object"
-            },
         )
 
-        raw_output = response.choices[0].message.content
+        message = response.choices[0].message
+
+        logger.info(
+            "AI response: content=%r reasoning=%r",
+            message.content,
+            getattr(message, "reasoning", None),
+        )
+
+        raw_output = message.content
 
         if not raw_output:
-            raise ValueError("Empty response from AI model.")
+            raise ValueError(
+                "Empty response from AI model."
+            )
 
-        ai_response_data = json.loads(raw_output)
+        try:
+            ai_response_data = json.loads(raw_output)
+        except json.JSONDecodeError as exc:
+            logger.error(
+                "AI returned invalid JSON: %s",
+                raw_output,
+            )
+            raise ValueError(
+                "AI returned invalid JSON."
+            ) from exc
 
         if (
             isinstance(ai_response_data, dict)
@@ -76,4 +96,6 @@ class AIService:
         ):
             raise ValueError("unsupported_topic")
 
-        return TrainingSchedule.model_validate(ai_response_data)
+        return TrainingSchedule.model_validate(
+            ai_response_data
+        )

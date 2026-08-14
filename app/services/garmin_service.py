@@ -1,3 +1,5 @@
+from typing import Any
+
 from datetime import date
 from garminconnect import Garmin
 
@@ -12,8 +14,9 @@ class GarminService:
     def get_workout(self, workout_id: str) -> dict:
         return self.client.get_workout_by_id(workout_id)
 
-    def get_scheduled_workouts(self) -> list[dict]:
-        return self.client.get_scheduled_workouts()
+    def get_scheduled_workouts(self) -> dict[str, Any]:
+        today_date = date.today()
+        return self.client.get_scheduled_workouts(today_date.year, today_date.month)
 
     def cleanup_ai_workouts(self) -> int:
         deleted_count = 0
@@ -56,3 +59,6 @@ class GarminService:
                 except Exception:
                     pass
             raise
+
+    def get_recent_activities(self, limit: int = 20):
+        return self.client.get_activities(0, limit)

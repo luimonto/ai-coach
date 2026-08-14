@@ -33,7 +33,15 @@ def get_workout_service(
     garmin_service: GarminService = Depends(
         get_garmin_service
     ),
+    ai_service: AIService = Depends(
+        get_ai_service
+    ),
+    athlete_service: AthleteService = Depends(
+        get_athlete_service
+    )
 ) -> WorkoutService:
     return WorkoutService(
+        ai_service=ai_service,
         garmin_service=garmin_service,
+        athlete_service=athlete_service
     )
