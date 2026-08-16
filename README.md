@@ -1,88 +1,9 @@
-                         ┌──────────────┐
-                         │    Client    │
-                         └──────┬───────┘
-                                │
-                                │ POST /v1_router
-                                ▼
-                         ┌──────────────┐
-                         │   FastAPI    │
-                         │    Router    │
-                         └──────┬───────┘
-                                │
-                                ▼
-                     ┌─────────────────────┐
-                     │   WorkoutService    │
-                     └──────┬────────┬─────┘
-                            │        │
-                 ┌──────────┘        └───────────┐
-                 ▼                               ▼
-          ┌─────────────┐                ┌───────────────┐
-          │ AIService   │                │ GarminService │
-          └──────┬──────┘                └───────┬───────┘
-                 │                               │
-                 ▼                               ▼
-          ┌─────────────┐                ┌───────────────┐
-          │   Ollama    │                │ Garmin Connect│
-          │   llama3    │                └───────────────┘
-          └─────────────┘
+first successfull training generation by the coach:
 
 
-
-                     FastAPI
-                        │
-                        ▼
-                 ┌─────────────┐
-                 │   main.py   │
-                 └──────┬──────┘
-                        │
-                        ▼
-                ┌───────────────┐
-                │   v1/router   │
-                └───────┬───────┘
-                        │
-          ┌─────────────┼─────────────┐
-          ▼             ▼             ▼
-      /health        /workouts     /coach
-                                    /schedule
-          │             │             │
-          ▼             ▼             ▼
-       Health       Workout       AI Coach
-       Service      Service       Service
-                        │             │
-                        ▼             ▼
-                    Garmin        OpenAI
-                     Client        Client
-
-
-                     
-
-                    ┌──────────────────────┐
-                    │      FastAPI API     │
-                    │                      │
-                    │ /workouts            │
-                    │ /athlete/profile     │
-                    │ /athlete/history     │
-                    │ /coach/schedule      │
-                    └──────────┬───────────┘
-                               │
-             ┌─────────────────┴─────────────────┐
-             │                                   │
-     ┌───────▼────────┐                  ┌───────▼────────┐
-     │ AthleteService │                  │  AIService     │
-     │                │                  │                │
-     │ profile        │                  │ prompt + LLM   │
-     │ goals          │                  │                │
-     │ history        │                  │                │
-     └───────┬────────┘                  └───────┬────────┘
-             │                                   │
-             └──────────────┬────────────────────┘
-                            │
-                    ┌───────▼────────┐
-                    │ Athlete Context │
-                    │                │
-                    │ profile        │
-                    │ goals          │
-                    │ training hist. │
-                    │ preferences    │
-                    │ limitations    │
-                    └────────────────┘
+========== LLM DEBUG ==========
+CONTENT LENGTH: 10457
+CONTENT: '{"training_plan": [\n  {\n    "week_number": 1,\n    "focus": "Base Building & Technique",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Full body strength focus: Squats, lunges, and core stability.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Technique focus: Drill work (catch-up, fist drill) and steady laps.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Easy aerobic run on trail or road to build base.",\n        "duration_minutes": 40\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Steady state ride with moderate resistance.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Endurance swim: Continuous laps at a steady pace.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Longer endurance ride (Road or Mountain).",\n        "duration_minutes": 90\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Long easy run.",\n        "duration_minutes": 60\n      }\n    ]\n  },\n  {\n    "week_number": 2,\n    "focus": "Base Building & Technique",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Lower body and core focus.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Drills + Main set: 10x100m at steady pace.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Intervals: 6x400m at higher intensity with recovery.",\n        "duration_minutes": 40\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Hill repeats or high-torque intervals on bike.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Endurance swim: 400m to 800m continuous sets.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Long endurance ride.",\n        "duration_minutes": 100\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Long easy run (Trail or Road).",\n        "duration_minutes": 70\n      }\n    ]\n  },\n  {\n    "week_number": 3,\n    "focus": "Base Building & Technique",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Full body functional strength.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Technique focus + 200m repeats.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Tempo run: 15 mins easy, 15 mins hard, 10 mins cool down.",\n        "duration_minutes": 40\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Steady ride with some sprint intervals.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Endurance swim: focus on consistent stroke count.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Long endurance ride.",\n        "duration_minutes": 120\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Long easy run.",\n        "duration_minutes": 80\n      }\n    ]\n  },\n  {\n    "week_number": 4,\n    "focus": "Recovery & Consolidation",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Rest/Mobility",\n        "description": "Active recovery and stretching.",\n        "duration_minutes": 30\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Easy swim, focus on feel of the water.",\n        "duration_minutes": 40\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Short easy run.",\n        "duration_minutes": 30\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Easy spin on bike.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Short endurance swim.",\n        "duration_minutes": 40\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Moderate distance ride.",\n        "duration_minutes": 75\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Easy run or hike.",\n        "duration_minutes": 40\n      }\n    ]\n  },\n  {\n    "week_number": 5,\n    "focus": "Build Phase - Strength & Speed",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Power and explosive movements.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Speed sets: 8x50m fast with 30s rest.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Hill repeats or incline running.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Intervals: 5x3 mins high intensity.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Endurance swim with pace changes.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Long ride + 10 min transition run (Brick).",\n        "duration_minutes": 120\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Longer endurance run.",\n        "duration_minutes": 90\n      }\n    ]\n  },\n  {\n    "week_number": 6,\n    "focus": "Build Phase - Strength & Speed",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Lower body power.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Speed sets: 10x50m fast with 20s rest.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Tempo run (20 mins at threshold).",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Longer interval sets on bike.",\n        "duration_minutes": 75\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Endurance swim (1000m+ total).",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Long ride + 15 min transition run.",\n        "duration_minutes": 130\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Long endurance run (Trail/Road).",\n        "duration_minutes": 100\n      }\n    ]\n  },\n  {\n    "week_number": 7,\n    "focus": "Build Phase - Strength & Speed",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Full body power.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Mixed sets: Speed and endurance.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Hill repeats or sprint intervals.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "High intensity interval training (HIIT).",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Endurance swim with pace changes.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Long ride + 20 min transition run.",\n        "duration_minutes": 150\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Long endurance run.",\n        "duration_minutes": 110\n      }\n    ]\n  },\n  {\n    "week_number": 8,\n    "focus": "Recovery & Consolidation",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Rest/Mobility",\n        "description": "Active recovery.",\n        "duration_minutes": 30\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Easy swim, focus on technique.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Short easy run.",\n        "duration_minutes": 30\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Easy spin on bike.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        "description": "Short endurance swim.",\n        "duration_minutes": 45\n      },\n      {\n        "day": "Saturday",\n        "type": "Bike",\n        "description": "Moderate distance ride.",\n        "duration_minutes": 90\n      },\n      {\n        "day": "Sunday",\n        "type": "Run",\n        "description": "Easy run or hike.",\n        "duration_minutes": 60\n      }\n    ]\n  },\n  {\n    "week_number": 9,\n    "focus": "Peak Phase - Specificity",\n    "workouts": [\n      {\n        "day": "Monday",\n        "type": "Strength Training",\n        "description": "Maintenance strength.",\n        "duration_minutes": 40\n      },\n      {\n        "day": "Tuesday",\n        "type": "Swim",\n        "description": "Open water prep or long continuous swim.",\n        "duration_minutes": 60\n      },\n      {\n        "day": "Wednesday",\n        "type": "Run",\n        "description": "Tempo run at target race pace.",\n        "duration_minutes": 50\n      },\n      {\n        "day": "Thursday",\n        "type": "Bike",\n        "description": "Longer interval sets on bike.",\n        "duration_minutes": 75\n      },\n      {\n        "day": "Friday",\n        "type": "Swim",\n        '
+REASONING: 'Triathlon (Swim, Bike, Run).\n12 weeks from August 15, 2026.\nThe user has a diverse background: Running (high intensity/volume), Trail Running (significant volume), Mountaineering, Indoor Cardio, Swimming (recent sessions), Strength Training, and Cycling (Mountain & Road).\n\n    *   *Running:* High engagement. "Zapopan Running" shows high HR (185) for short duration; "Trail Running" shows significant distance (22km in one session).\n    *   *Swimming:* Recent activity (two sessions), but low volume compared to running. Needs more consistency.\n    *   *Cycling:* Only 2 recorded types (Mountain/Road). One long mountain bike ride (~36km) and a shorter road bike ride. Need to build endurance here.\n    *   *Strength:* Consistent inclusion in the log, which is good for injury prevention.\n    *   *Heart Rate Profile:* Max HRs are high (200+), suggesting an athlete capable of high intensity but needing structured aerobic base building for a triathlon.\n\n    *   *Phase 1: Base Building (Weeks 1-4):* Focus on technique in swimming, steady-state endurance in cycling/running, and consistent strength work.\n    *   *Phase 2: Build Phase (Weeks 5-8):* Increase intensity, introduce "Brick" workouts (bike to run), and improve swim speed.\n    *   *Phase 3: Peak & Taper (Weeks 9-12):* Specificity of the triathlon distance, high-intensity intervals, and a 2-week taper before the race.\n\n    *   *Swim:* Focus on technique first, then endurance.\n    *   *Bike:* Transition from mountain/road to steady road cycling with some interval work.\n    *   *Run:* Leverage existing running strength but move toward "triathlon" style (shorterer, faster intervals or sustained efforts).\n\n    *   *Week 1-4 Focus:* Foundation.\n        *   Swim: 2x/week (Technique + Endurance)\n        *   Bike: 2x/week (One long ride, one interval)\n        *   Run: 3x/week (One easy, one speed, one long)\n        *   Strength: 1-2x/week\n\n    *   *Week 5-8 Focus:* Strength & Speed.\n        *   Swim: 2-3x/week (Speed sets)\n        *   Bike: 2x/week (Include "Brick" sessions - bike then immediately run)\n        *   Run: 3x/week (Hill repeats or tempo runs)\n\n    *   *Week 9-10 Focus:* Peak.\n        *   Simulate race conditions. Longer bricks. Higher intensity.\n\n    *   *Week 11-12 Focus:* Taper.\n        *   Reduce volume, maintain some intensity to keep the "feel."\n\n    *   The user has a lot of trail running experience (95km total). This means they have great leg strength but might need to work on road/track efficiency and bike handling.\n    *   Swimming is currently their weakest link in terms of frequency. I should emphasize swim technique early.'
+REFUSAL: None
+FINISH: length

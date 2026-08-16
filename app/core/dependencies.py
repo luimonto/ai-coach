@@ -8,6 +8,9 @@ from app.services.ai_service import AIService
 from app.services.athlete_service import AthleteService
 from app.services.garmin_service import GarminService
 from app.services.workout_service import WorkoutService
+from app.services.training_analysis_service import (
+    TrainingAnalysisService
+)
 
 
 athlete_service = AthleteService()
@@ -29,6 +32,11 @@ def get_garmin_service(
     return GarminService(client)
 
 
+def get_training_analysis_service(
+) -> TrainingAnalysisService:
+
+    return TrainingAnalysisService()
+
 def get_workout_service(
     garmin_service: GarminService = Depends(
         get_garmin_service
@@ -38,10 +46,14 @@ def get_workout_service(
     ),
     athlete_service: AthleteService = Depends(
         get_athlete_service
-    )
+    ),
+    training_analysis_service: TrainingAnalysisService = Depends(
+        get_training_analysis_service
+    ),
 ) -> WorkoutService:
     return WorkoutService(
         ai_service=ai_service,
         garmin_service=garmin_service,
-        athlete_service=athlete_service
+        athlete_service=athlete_service,
+        training_analysis_service=training_analysis_service,
     )

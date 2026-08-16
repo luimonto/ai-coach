@@ -3,6 +3,7 @@ from datetime import date
 
 from app.schemas.activity_summary import ActivitySummary
 from app.schemas.athlete import AthleteHistoryEntry, AthleteProfile
+from app.schemas.training_summary import TrainingSummary
 
 
 class CoachRequest(BaseModel):
@@ -36,3 +37,4 @@ class AthleteContext(BaseModel):
     history: list[AthleteHistoryEntry] = Field(default_factory=list)
     upcoming_events: list[str] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
+    training_summary: TrainingSummary | None = None

@@ -4,14 +4,22 @@ from app.schemas.workout_summary import WorkoutSummary
 from app.services.athlete_service import AthleteService
 from app.schemas.coach import AthleteContext
 from app.schemas.activity_summary import ActivitySummary
+from app.services.training_analysis_service import TrainingAnalysisService
 
 
 class WorkoutService:
 
-    def __init__(self, ai_service: AIService, garmin_service: GarminService, athlete_service: AthleteService):
+    def __init__(self, 
+                 ai_service: AIService, 
+                 garmin_service: GarminService, 
+                 athlete_service: AthleteService,
+                 training_analysis_service: TrainingAnalysisService
+
+    ):
         self.ai_service = ai_service
         self.garmin_service = garmin_service
         self.athlete_service = athlete_service
+        self.training_analysis_service = training_analysis_service
 
     def get_recent_workouts(
         self,
@@ -45,12 +53,24 @@ class WorkoutService:
         return self.get_recent_workouts()
 
     def build_athlete_context(
-            self,
-            limit: int = 20,
+        self,
+        limit: int = 50,
     ) -> AthleteContext:
-        recent_activities = self.get_recent_activities(limit=limit)
+
+        recent_activities = self.get_recent_activities(
+            limit=limit
+        )
+
+        training_summary = (
+            self.training_analysis_service.build_summary(
+                activities=recent_activities,
+                period_days=14,
+            )
+        )
+
         return self.athlete_service.build_context(
-            recent_activities=recent_activities
+            recent_activities=recent_activities,
+            training_summary=training_summary,
         )
 
     def generate_training_schedule(
@@ -59,7 +79,7 @@ class WorkoutService:
     ):
         athlete_context = self.build_athlete_context()
 
-        return self.ai_service.generate_schedule(
+        return self.ai_service.generate_training_plan(
             user_goal=user_goal,
             athlete_context=athlete_context,
         )
@@ -120,3 +140,16 @@ class WorkoutService:
             )
             for activity in activities
         ]
+
+    def get_training_summary(
+        self,
+        period_days: int = 14,
+    ):
+        activities = self.get_recent_activities(
+            limit=100
+        )
+
+        return self.training_analysis_service.build_summary(
+            activities=activities,
+            period_days=period_days
+        )

@@ -1,15 +1,12 @@
 import json
-import logging
 from datetime import date
 from pathlib import Path
 
 from openai import OpenAI
 
 from app.core.config import get_settings
-from app.schemas.coach import TrainingSchedule, AthleteContext
-
-
-logger = logging.getLogger(__name__)
+from app.schemas.ai_training_plan import AITrainingPlan
+from app.schemas.coach import AthleteContext
 
 
 class AIService:
@@ -28,26 +25,33 @@ class AIService:
             encoding="utf-8"
         )
 
-    def generate_schedule(
+    def generate_training_plan(
         self,
         user_goal: str,
         athlete_context: AthleteContext,
-    ) -> TrainingSchedule:
+    ) -> AITrainingPlan:
 
-        athlete_context_json = athlete_context.model_dump_json(
-            exclude_none=False
+        today = date.today().isoformat()
+
+        athlete_context_json = (
+            athlete_context.model_dump_json(
+                exclude_none=False
+            )
         )
 
         user_prompt = f"""
-            ATHLETE CONTEXT:
-            {athlete_context_json}
+ATHLETE CONTEXT:
+{athlete_context_json}
 
-            ATHLETE REQUEST:
-            {user_goal}
+ATHLETE REQUEST:
+{user_goal}
 
-            Today's date is {date.today().isoformat()}.
-            Schedule relative to this date.
-        """
+TODAY:
+{today}
+
+Create the training plan based on the athlete's
+actual recent training history and the requested goal.
+"""
 
         response = self.client.chat.completions.create(
             model=self.settings.model,
@@ -62,40 +66,47 @@ class AIService:
                 },
             ],
             temperature=0.1,
+            response_format={
+                "type": "json_object"
+            },
         )
 
         message = response.choices[0].message
 
-        logger.info(
-            "AI response: content=%r reasoning=%r",
-            message.content,
-            getattr(message, "reasoning", None),
-        )
-
         raw_output = message.content
+
+        print("========== LLM DEBUG ==========")
+        print("CONTENT LENGTH:", len(raw_output or ""))
+        print("CONTENT:", repr(raw_output))
+        print(
+            "REASONING:",
+            repr(getattr(message, "reasoning", None))
+        )
+        print(
+            "REFUSAL:",
+            repr(getattr(message, "refusal", None))
+        )
+        print(
+            "FINISH:",
+            response.choices[0].finish_reason
+        )
+        print("================================")
 
         if not raw_output:
             raise ValueError(
-                "Empty response from AI model."
+                "LLM returned no content"
             )
 
         try:
             ai_response_data = json.loads(raw_output)
         except json.JSONDecodeError as exc:
-            logger.error(
-                "AI returned invalid JSON: %s",
-                raw_output,
-            )
             raise ValueError(
-                "AI returned invalid JSON."
+                "LLM returned invalid JSON. "
+                f"length={len(raw_output)} "
+                f"position={exc.pos} "
+                f"error={exc.msg}"
             ) from exc
 
-        if (
-            isinstance(ai_response_data, dict)
-            and ai_response_data.get("error") == "unsupported_topic"
-        ):
-            raise ValueError("unsupported_topic")
-
-        return TrainingSchedule.model_validate(
+        return AITrainingPlan.model_validate(
             ai_response_data
         )
