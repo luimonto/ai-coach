@@ -7,3 +7,37 @@ CONTENT: '{"training_plan": [\n  {\n    "week_number": 1,\n    "focus": "Base Bu
 REASONING: 'Triathlon (Swim, Bike, Run).\n12 weeks from August 15, 2026.\nThe user has a diverse background: Running (high intensity/volume), Trail Running (significant volume), Mountaineering, Indoor Cardio, Swimming (recent sessions), Strength Training, and Cycling (Mountain & Road).\n\n    *   *Running:* High engagement. "Zapopan Running" shows high HR (185) for short duration; "Trail Running" shows significant distance (22km in one session).\n    *   *Swimming:* Recent activity (two sessions), but low volume compared to running. Needs more consistency.\n    *   *Cycling:* Only 2 recorded types (Mountain/Road). One long mountain bike ride (~36km) and a shorter road bike ride. Need to build endurance here.\n    *   *Strength:* Consistent inclusion in the log, which is good for injury prevention.\n    *   *Heart Rate Profile:* Max HRs are high (200+), suggesting an athlete capable of high intensity but needing structured aerobic base building for a triathlon.\n\n    *   *Phase 1: Base Building (Weeks 1-4):* Focus on technique in swimming, steady-state endurance in cycling/running, and consistent strength work.\n    *   *Phase 2: Build Phase (Weeks 5-8):* Increase intensity, introduce "Brick" workouts (bike to run), and improve swim speed.\n    *   *Phase 3: Peak & Taper (Weeks 9-12):* Specificity of the triathlon distance, high-intensity intervals, and a 2-week taper before the race.\n\n    *   *Swim:* Focus on technique first, then endurance.\n    *   *Bike:* Transition from mountain/road to steady road cycling with some interval work.\n    *   *Run:* Leverage existing running strength but move toward "triathlon" style (shorterer, faster intervals or sustained efforts).\n\n    *   *Week 1-4 Focus:* Foundation.\n        *   Swim: 2x/week (Technique + Endurance)\n        *   Bike: 2x/week (One long ride, one interval)\n        *   Run: 3x/week (One easy, one speed, one long)\n        *   Strength: 1-2x/week\n\n    *   *Week 5-8 Focus:* Strength & Speed.\n        *   Swim: 2-3x/week (Speed sets)\n        *   Bike: 2x/week (Include "Brick" sessions - bike then immediately run)\n        *   Run: 3x/week (Hill repeats or tempo runs)\n\n    *   *Week 9-10 Focus:* Peak.\n        *   Simulate race conditions. Longer bricks. Higher intensity.\n\n    *   *Week 11-12 Focus:* Taper.\n        *   Reduce volume, maintain some intensity to keep the "feel."\n\n    *   The user has a lot of trail running experience (95km total). This means they have great leg strength but might need to work on road/track efficiency and bike handling.\n    *   Swimming is currently their weakest link in terms of frequency. I should emphasize swim technique early.'
 REFUSAL: None
 FINISH: length
+
+
+Pero ahora esta respondiendo con un monton de datos el plan de entrenamiento, siguientes pasos, tratar de separar para hacer
+dos AI calls
+
+                 Athlete Context
+                       │
+                       ▼
+                ┌─────────────┐
+                │ AI Planner  │
+                └──────┬──────┘
+                       │
+                 small JSON
+                       │
+                       ▼
+              Training Plan
+                       │
+                       ▼
+             Python scheduler
+                       │
+             ┌─────────┴─────────┐
+             │                   │
+             ▼                   ▼
+       Workout 1             Workout 2
+             │                   │
+             ▼                   ▼
+        AI workout            AI workout
+             │                   │
+             └─────────┬─────────┘
+                       ▼
+               Garmin Translator
+                       │
+                       ▼
+                    Garmin
