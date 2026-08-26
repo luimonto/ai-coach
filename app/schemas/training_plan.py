@@ -1,16 +1,25 @@
 from datetime import date
+
 from pydantic import BaseModel, Field
 
 
-class TrainingSession(BaseModel):
+class PlannedWorkout(BaseModel):
+    week: int = Field(ge=1)
     date: date
-    sport: str
-    duration_minutes: int = Field(
-        gt=0,
-        le=300,
-    )
-    intensity: str
-    description: str
+    workout_type: str
+    objective: str
+    focus: str
+    duration_minutes: int | None = None
 
-class TrainingPlan(BaseModel):
-    sessions: list[TrainingSession]
+
+class WeeklyPlan(BaseModel):
+    week: int = Field(ge=1)
+    objective: str
+    focus: list[str]
+    intensity: str
+
+
+class TrainingPlanSchema(BaseModel):
+    duration_weeks: int = Field(ge=1)
+    overall_objective: str
+    weeks: list[WeeklyPlan]

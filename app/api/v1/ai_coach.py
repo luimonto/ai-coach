@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 
 from app.core.dependencies import get_workout_service
-from app.schemas.coach import CoachRequest, TrainingSchedule
+from app.schemas.coach import TrainingPlanRequest
+from app.schemas.training_plan import TrainingPlanSchema
 from app.services.workout_service import WorkoutService
 
 
@@ -12,15 +13,15 @@ router = APIRouter(
 
 
 @router.post(
-    "/schedule",
-    response_model=TrainingSchedule,
+    "/plan",
+    response_model=TrainingPlanSchema,
 )
-def generate_schedule(
-    request: CoachRequest,
+def generate_training_plan(
+    request: TrainingPlanRequest,
     service: WorkoutService = Depends(
         get_workout_service
     ),
-):
-    return service.generate_training_schedule(
+) -> TrainingPlanSchema:
+    return service.generate_training_roadmap(
         user_goal=request.goal
     )

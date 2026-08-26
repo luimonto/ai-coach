@@ -3,8 +3,17 @@ from datetime import date
 
 from app.schemas.activity_summary import ActivitySummary
 from app.schemas.athlete import AthleteHistoryEntry, AthleteProfile
+from app.schemas.training_plan import TrainingPlanSchema
 from app.schemas.training_summary import TrainingSummary
 
+class TrainingPlanRequest(BaseModel):
+    goal: str = Field(
+        min_length=3,
+        max_length=1000,
+    )
+
+class TrainingPlanResponse(BaseModel):
+    plan: TrainingPlanSchema
 
 class CoachRequest(BaseModel):
     """Coach request schema."""
