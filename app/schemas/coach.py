@@ -3,17 +3,22 @@ from datetime import date
 
 from app.schemas.activity_summary import ActivitySummary
 from app.schemas.athlete import AthleteHistoryEntry, AthleteProfile
-from app.schemas.training_plan import TrainingPlanSchema
+from app.schemas.training_plan import TrainingPlanSchema, WeeklyPlan
 from app.schemas.training_summary import TrainingSummary
 
 class TrainingPlanRequest(BaseModel):
+    external_id: str = Field(
+        min_length=1,
+        max_length=255
+    )
     goal: str = Field(
         min_length=3,
-        max_length=1000,
+        max_length=2000,
     )
 
 class TrainingPlanResponse(BaseModel):
     plan: TrainingPlanSchema
+
 
 class CoachRequest(BaseModel):
     """Coach request schema."""
@@ -47,3 +52,7 @@ class AthleteContext(BaseModel):
     upcoming_events: list[str] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
     training_summary: TrainingSummary | None = None
+
+
+class WorkoutDetailRequest(BaseModel):
+    roadmap_week: WeeklyPlan

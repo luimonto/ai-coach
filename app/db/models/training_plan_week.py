@@ -5,30 +5,31 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    JSON,
     String,
-    Text,
+    Text
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
 
-class TrainingPlan(Base):
-    __tablename__ = "training_plans"
+class TrainingPlanWeek(Base):
+    __tablename__ = "training_plan_weeks"
 
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
     )
 
-    athlete_id: Mapped[int] = mapped_column(
-        ForeignKey("athletes.id"),
+    training_plan_id: Mapped[int] = mapped_column(
+        ForeignKey("training_plans.id"),
         nullable=False,
         index=True,
     )
 
-    goal: Mapped[str] = mapped_column(
-        Text,
+    week_number: Mapped[int] = mapped_column(
+        Integer,
         nullable=False,
     )
 
@@ -37,15 +38,31 @@ class TrainingPlan(Base):
         nullable=False,
     )
 
-    duration_weeks: Mapped[int] = mapped_column(
-        Integer,
+    end_date: Mapped[date] = mapped_column(
+        Date,
+        nullable=False,
+    )
+
+    objective: Mapped[str] = mapped_column(
+        Text,
+        nullable=False,
+    )
+
+    focus: Mapped[list] = mapped_column(
+        # PostgreSQL JSON
+        JSON,
+        nullable=False,
+    )
+
+    intensity: Mapped[str] = mapped_column(
+        String(30),
         nullable=False,
     )
 
     status: Mapped[str] = mapped_column(
         String(20),
         nullable=False,
-        default="active",
+        default="pending",
         index=True,
     )
 
@@ -55,21 +72,13 @@ class TrainingPlan(Base):
         default=datetime.utcnow,
     )
 
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        nullable=False,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+    training_plan = relationship(
+        "TrainingPlan",
+        back_populates="weeks",
     )
 
-    athlete = relationship(
-        "Athlete",
-        back_populates="training_plans",
-    )
-
-    weeks = relationship(
-        "TrainingPlanWeek",
-        back_populates="training_plan",
+    workouts = relationship(
+        "PlannedWorkout",
+        back_populates="week",
         cascade="all, delete-orphan",
-        order_by="TrainingPlanWeek.week_number",
     )

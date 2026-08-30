@@ -1,0 +1,13 @@
+[
+    {
+        "activity_id": 1,
+        "activity_name": "Trail running",
+        "sport_type_key": "Trail running",
+        "start_time": null,
+        "duration_seconds": 3600.0,
+        "distance_meters": 10.0,
+        "average_heart_rate": 160.0,
+        "max_heart_rate": 185.0,
+        "calories": 1600.0
+    }
+]

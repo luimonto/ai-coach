@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.database import Base
+from app.db.base import Base
 
 
 class Athlete(Base):
@@ -14,33 +14,28 @@ class Athlete(Base):
         primary_key=True,
     )
 
-    name: Mapped[str] = mapped_column(
-        String(100),
+    external_id: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
         nullable=False,
-    )
-
-    goal: Mapped[str | None] = mapped_column(
-        Text,
-        nullable=True,
-    )
-
-    experience_level: Mapped[str | None] = mapped_column(
-        String(50),
-        nullable=True,
-    )
-
-    training_days_per_week: Mapped[int | None] = mapped_column(
-        Integer,
-        nullable=True,
+        index=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
+        nullable=False,
         default=datetime.utcnow,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,
+        nullable=False,
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
+    )
+
+    training_plans = relationship(
+        "TrainingPlan",
+        back_populates="athlete",
+        cascade="all, delete-orphan",
     )

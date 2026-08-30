@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 
 from app.core.dependencies import get_workout_service
-from app.schemas.coach import TrainingPlanRequest
-from app.schemas.training_plan import TrainingPlanSchema
+from app.schemas.coach import TrainingPlanRequest, WorkoutDetailRequest
+from app.schemas.training_plan import TrainingPlanSchema, WorkoutDetail
 from app.services.workout_service import WorkoutService
+from app.schemas.training_plan import CurrentWeekResponse
 
 
 router = APIRouter(
@@ -22,6 +23,36 @@ def generate_training_plan(
         get_workout_service
     ),
 ) -> TrainingPlanSchema:
+
     return service.generate_training_roadmap(
-        user_goal=request.goal
+        external_id=request.external_id,
+        user_goal=request.goal,
+    )
+
+@router.post(
+    "/plan/workout",
+    response_model=WorkoutDetail
+)
+def generate_workout(
+    request: WorkoutDetailRequest,
+    service: WorkoutService = Depends(
+        get_workout_service
+    )
+) -> WorkoutDetail:
+    return service.generate_workout_detail(
+        roadmap_week=request.roadmap_week
+    )
+
+@router.get(
+    "/plan/current-week",
+    response_model=CurrentWeekResponse,
+)
+def get_current_week(
+    external_id: str,
+    service: WorkoutService = Depends(
+        get_workout_service
+    ),
+) -> CurrentWeekResponse:
+    return service.get_current_week(
+        external_id=external_id
     )

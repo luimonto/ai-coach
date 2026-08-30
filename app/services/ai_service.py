@@ -8,10 +8,9 @@ from app.core.config import get_settings
 from app.schemas.coach import AthleteContext
 from app.schemas.training_plan import (
     TrainingPlanSchema,
-    PlannedWorkout,
+    WeeklyPlan,
+    WorkoutDetail
 )
-from app.schemas.workout_detail import WorkoutDetail
-
 
 class AIService:
 
@@ -121,18 +120,18 @@ class AIService:
         )
 
         user_prompt = f"""
-ATHLETE CONTEXT:
-{athlete_context_json}
-
-ATHLETE REQUEST:
-{user_goal}
-
-TODAY:
-{today}
-
-Generate the high-level training roadmap.
-Do not generate individual workouts.
-"""
+        ATHLETE CONTEXT:
+        {athlete_context_json}
+        ATHLETE REQUEST:
+        {user_goal}
+        TODAY:
+        {today}
+        Create the high-level training roadmap.
+        Do NOT create individual workouts.
+        Do NOT provide exercises.
+        Do NOT provide sets or repetitions.
+        Focus only on weekly progression.
+        """
 
         data = self._get_raw_response(
             self.planner_prompt,
@@ -145,13 +144,9 @@ Do not generate individual workouts.
 
     def expand_workout_details(
         self,
-        workout: PlannedWorkout,
+        roadmap_week: WeeklyPlan,
         athlete_context: AthleteContext,
     ) -> WorkoutDetail:
-
-        workout_json = (
-            workout.model_dump_json()
-        )
 
         athlete_context_json = (
             athlete_context.model_dump_json(
@@ -159,21 +154,35 @@ Do not generate individual workouts.
             )
         )
 
+        roadmap_json = (
+            roadmap_week.model_dump_json()
+        )
+
         user_prompt = f"""
-PLANNED WORKOUT:
-{workout_json}
+        ATHLETE CONTEXT:
+        {athlete_context_json}
 
-ATHLETE CONTEXT:
-{athlete_context_json}
+        SELECTED ROADMAP WEEK:
+        {roadmap_json}
 
-Generate the detailed workout.
-"""
+        Generate ONE representative workout
+        for this training phase.
+
+        The workout must be consistent with:
+
+        - athlete fitness
+        - athlete goals
+        - recent training
+        - the selected week's objective
+        - the selected week's focus
+        - the selected week's intensity
+
+        Return ONLY the WorkoutDetail JSON object.
+        """
 
         data = self._get_raw_response(
             self.detailer_prompt,
             user_prompt,
         )
 
-        return WorkoutDetail.model_validate(
-            data
-        )
+        return WorkoutDetail.model_validate(data)
