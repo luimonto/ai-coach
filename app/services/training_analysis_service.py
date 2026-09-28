@@ -56,7 +56,7 @@ class TrainingAnalysisService:
                         activity.max_heart_rate,
                     )
 
-        sports = []
+        sports: list[SportSummary] = []
 
         for sport, data in sport_data.items():
 
@@ -78,6 +78,8 @@ class TrainingAnalysisService:
                     max_heart_rate=data["max_heart_rate"],
                 )
             )
+
+        sports.sort(key=lambda summary: summary.sport_type)
 
         return TrainingSummary(
             period_days=period_days,

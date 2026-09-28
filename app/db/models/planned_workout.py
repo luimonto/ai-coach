@@ -7,14 +7,22 @@ from sqlalchemy import (
     Integer,
     JSON,
     String,
+    UniqueConstraint
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
-
 class PlannedWorkout(Base):
     __tablename__ = "planned_workouts"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "week_id",
+            "scheduled_date",
+            name="uq_planned_workout_week_date",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(
         Integer,

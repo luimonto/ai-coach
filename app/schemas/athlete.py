@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from datetime import date
 
 
 class AthleteProfile(BaseModel):
@@ -27,14 +26,4 @@ class AthleteProfile(BaseModel):
         default_factory=list
     )
 
-    notes: str | None = None
-
-
-
-class AthleteHistoryEntry(BaseModel):
-    date: date
-    sport: str
-    event: str | None = None
-    distance_meters: float | None = None
-    duration_seconds: int | None = None
     notes: str | None = None

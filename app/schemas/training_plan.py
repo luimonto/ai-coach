@@ -3,15 +3,6 @@ from datetime import date
 from pydantic import BaseModel, Field
 
 
-class PlannedWorkout(BaseModel):
-    week: int = Field(ge=1)
-    date: date
-    workout_type: str
-    objective: str
-    focus: str
-    duration_minutes: int | None = None
-
-
 class WeeklyPlan(BaseModel):
     week: int = Field(ge=1)
     objective: str
@@ -53,3 +44,27 @@ class CurrentWeekResponse(BaseModel):
     focus: list[str]
     intensity: str
     status: str
+
+
+
+class PlannedWorkoutResponse(BaseModel):
+    id: int
+    scheduled_date: date
+    workout_type: str
+    workout_name: str
+    workout_data: dict
+    status: str
+    garmin_workout_id: int | None = None
+
+
+class CurrentWeekWorkoutsResponse(BaseModel):
+    training_plan_id: int
+    week_id: int
+    week_number: int
+    start_date: date
+    end_date: date
+    objective: str
+    focus: list[str]
+    intensity: str
+    status: str
+    workouts: list[PlannedWorkoutResponse]

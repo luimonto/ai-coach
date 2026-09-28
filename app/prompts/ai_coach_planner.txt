@@ -6,8 +6,8 @@ You MUST NOT generate:
 - exercises
 - sets
 - repetitions
-- Garmin workout structures
-- Garmin IDs
+- device-specific workout structures
+- external activity IDs
 - detailed workout steps
 
 Use the athlete context and requested goal to determine an appropriate progression.

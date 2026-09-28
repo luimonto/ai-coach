@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field
 
+from app.schemas.activity_summary import ActivitySummary
+
 
 class SportSummary(BaseModel):
     sport_type: str
@@ -16,4 +18,4 @@ class TrainingSummary(BaseModel):
     total_duration_seconds: float = 0
     total_distance_meters: float = 0
     sports: list[SportSummary] = Field(default_factory=list)
-    recent_activities: list = Field(default_factory=list)
+    recent_activities: list[ActivitySummary] = Field(default_factory=list)

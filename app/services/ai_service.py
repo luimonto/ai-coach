@@ -1,4 +1,5 @@
 import json
+from functools import lru_cache
 from datetime import date
 from pathlib import Path
 
@@ -12,6 +13,15 @@ from app.schemas.training_plan import (
     WorkoutDetail
 )
 
+
+PROMPT_DIRECTORY = Path(__file__).resolve().parent.parent / "prompts"
+
+
+@lru_cache
+def load_prompt(name: str) -> str:
+    return (PROMPT_DIRECTORY / name).read_text(encoding="utf-8")
+
+
 class AIService:
 
     def __init__(self, client: OpenAI):
@@ -19,20 +29,8 @@ class AIService:
         self.client = client
         self.settings = get_settings()
 
-        prompt_path = (
-            Path(__file__).resolve().parent.parent
-            / "prompts"
-        )
-
-        self.planner_prompt = (
-            prompt_path
-            / "ai_coach_planner.txt"
-        ).read_text(encoding="utf-8")
-
-        self.detailer_prompt = (
-            prompt_path
-            / "ai_workout_detailer.txt"
-        ).read_text(encoding="utf-8")
+        self.planner_prompt = load_prompt("ai_coach_planner.txt")
+        self.detailer_prompt = load_prompt("ai_workout_detailer.txt")
 
     def _get_raw_response(
         self,
@@ -58,33 +56,10 @@ class AIService:
             },
         )
 
-        message = response.choices[0].message
+        if not response.choices:
+            raise ValueError("LLM returned no choices")
 
-        content = message.content
-
-        print("========== LLM DEBUG ==========")
-        print("CONTENT:", repr(content))
-        print(
-            "REASONING:",
-            repr(
-                getattr(
-                    message,
-                    "reasoning",
-                    None,
-                )
-            ),
-        )
-        print(
-            "REFUSAL:",
-            repr(
-                getattr(
-                    message,
-                    "refusal",
-                    None,
-                )
-            ),
-        )
-        print("================================")
+        content = response.choices[0].message.content
 
         if not content:
             raise ValueError(
@@ -165,19 +140,12 @@ class AIService:
         SELECTED ROADMAP WEEK:
         {roadmap_json}
 
-        Generate ONE representative workout
-        for this training phase.
+        TASK:
 
-        The workout must be consistent with:
+        Generate ONE specific workout for this athlete based on the selected roadmap week.
+        Do not return any fields other than those defined in the schema.
 
-        - athlete fitness
-        - athlete goals
-        - recent training
-        - the selected week's objective
-        - the selected week's focus
-        - the selected week's intensity
-
-        Return ONLY the WorkoutDetail JSON object.
+        Return ONLY the JSON object.
         """
 
         data = self._get_raw_response(

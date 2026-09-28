@@ -1,5 +1,7 @@
 from openai import OpenAI
+
 from app.core.config import get_settings
+
 
 def get_openai_client() -> OpenAI:
     settings = get_settings()
